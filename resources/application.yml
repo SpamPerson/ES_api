@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: local
+    active: prod
 
 jwt:
   secret: This_Api_Is_Create_By_Spamperson
