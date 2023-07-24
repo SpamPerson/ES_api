@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driverClassName: org.mariadb.jdbc.Driver
+    url: yourDataBaseUrl
+    username: yourDataBaseName
+    password: yourDataBasePassword
+
+  jpa:
+    open-in-view: false
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+      dialect: org.hibernate.dialect.MySQL5InnoDBDialect

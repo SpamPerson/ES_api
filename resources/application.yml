@@ -1,0 +1,9 @@
+server:
+  port: 8181
+
+spring:
+  profiles:
+    active: local
+
+jwt:
+  secret: This_Api_Is_Create_By_Spamperson
