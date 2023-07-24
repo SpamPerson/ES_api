@@ -8,3 +8,5 @@ This Project is The ES Project of Rest API.
 # Working
 + 2023.07.24
   + Create Project
+  + Connecting DataBase And Create Entity
+  + Setting Config (Security and JWT)
