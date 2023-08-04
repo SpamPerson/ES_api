@@ -41,14 +41,11 @@ public class User implements UserDetails {
     @Column(length = 20, nullable = false, name = "USER_NAME")
     private String name;
 
-    @Column(length = 100, nullable = true, name = "USER_EMAIL")
+    @Column(length = 100, nullable = false, name = "USER_EMAIL")
     private String mail;
 
     @Column(columnDefinition = "char(1) default 'N'",name = "IS_DELETED")
     private String isDeleted;
-
-    @Column(columnDefinition = "char(1) default 'N'",name = "IS_DARK_MODE")
-    private String isDarkMode;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "TB_USER_ROLES", joinColumns = @JoinColumn(name = "USER_CODE"),inverseJoinColumns = @JoinColumn(name = "ROLE_CODE"))
