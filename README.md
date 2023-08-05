@@ -13,4 +13,6 @@ This Project is The ES Project of Rest API.
 + 2023.08.04
   + Created RefreshToken Entity
   + Modified User Entity
-  + modified User Role
+  + Modified User Role
++ 2023.08.05
+  + Created Sentence and Word Entity
