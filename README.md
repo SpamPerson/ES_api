@@ -1,5 +1,6 @@
 # Project Info
 This Project is The ES Project of Rest API.
+<br>https://github.com/SpamPerson/ES_Documents.git
 
 1. Spring Boot v2.5.4
 2. JWT
@@ -16,4 +17,3 @@ This Project is The ES Project of Rest API.
   + Modified User Role
 + 2023.08.05
   + Created Sentence and Word Entity
-  + Created UserController (login && signUp)
