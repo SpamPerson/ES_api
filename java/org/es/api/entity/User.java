@@ -43,7 +43,7 @@ public class User implements UserDetails {
 
     @Column(length = 100, nullable = false, name = "USER_EMAIL")
     private String mail;
-
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(columnDefinition = "char(1) default 'N'",name = "IS_DELETED")
     private String isDeleted;
 

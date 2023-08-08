@@ -40,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/v1/login").permitAll()
-                .antMatchers("/v1/users/*","/v1/users").access("hasRole('ADMIN') and hasRole('MANAGER') or hasRole('SUPER')")
+//                .antMatchers("/v1/users/*","/v1/users").access("hasRole('ADMIN') and hasRole('MANAGER') or hasRole('SUPER')")
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
