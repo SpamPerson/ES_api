@@ -43,7 +43,7 @@ public class User implements UserDetails {
 
     @Column(length = 100, nullable = false, name = "USER_EMAIL")
     private String mail;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+
     @Column(columnDefinition = "char(1) default 'N'",name = "IS_DELETED")
     private String isDeleted;
 
@@ -58,39 +58,33 @@ public class User implements UserDetails {
         for(UserRole role: roles) {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         }
-        return null;
-    }
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Override
-    public String getPassword() {
-        return null;
+        return authorities;
     }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public String getUsername() {
-        return null;
+        return String.valueOf(this.userCode);
     }
-
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

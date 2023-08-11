@@ -5,6 +5,19 @@ spring:
     username: yourDataBaseName
     password: yourDataBasePassword
 
+  mail:
+    host: your Mail host
+    port: Mail port
+    username: Mail ID
+    password: Mail Password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
   jpa:
     open-in-view: false
     generate-ddl: true

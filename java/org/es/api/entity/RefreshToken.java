@@ -44,10 +44,11 @@ public class RefreshToken {
     }
 
     @Builder
-    public RefreshToken(String userId, String token, String ip) {
+    public RefreshToken(String userId, String token,Long expireTime, String ip) {
         this.ip = ip;
         this.userId = userId;
         this.token = token;
+        this.expireTime = expireTime;
         this.createDate = new Date().toString();
     }
 
