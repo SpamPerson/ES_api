@@ -16,19 +16,16 @@ import org.es.api.repository.UserJpaRepo;
 import org.es.api.repository.UserRoleJpaRepo;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +40,11 @@ public class UserController {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
 
+    /**
+     * 회원가입
+     *
+     * @param signUpUserDto
+     */
     @PostMapping("/signup")
     public void signUp(@RequestBody SignUpUserDto signUpUserDto) {
         if (userJpaRepo.findByUserId(signUpUserDto.getUserId()).isPresent()) {
@@ -58,6 +60,13 @@ public class UserController {
         userJpaRepo.save(signUpUserDto.toUser(passwordEncoder, roles));
     }
 
+    /**
+     * 로그인
+     *
+     * @param loginRequestDto
+     * @param request
+     * @return
+     */
     @PostMapping("/login")
     public LoginResponseDto login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request) {
         User user = userJpaRepo.findByUserId(loginRequestDto.getUserId()).orElseThrow();
@@ -90,6 +99,12 @@ public class UserController {
                 .build();
     }
 
+    /**
+     * 비밀번호 찾기
+     *
+     * @param findPasswordDto
+     * @return
+     */
     @PostMapping("findpassword")
     public boolean findPassword(@RequestBody FindPasswordDto findPasswordDto) {
         try {
@@ -98,7 +113,7 @@ public class UserController {
             MimeMessage sentMail = javaMailSender.createMimeMessage();
             sentMail.addRecipients(MimeMessage.RecipientType.TO, findPasswordDto.getMail());
             sentMail.setSubject("[ES] 비밀번호 찾기");
-            sentMail.setText(setContext(newPassword), "utf-8", "html");
+            sentMail.setText(setContext(newPassword, user.getUserId()), "utf-8", "html");
             userJpaRepo.save(User.builder()
                     .userCode(user.getUserCode())
                     .userId(user.getUserId())
@@ -116,12 +131,87 @@ public class UserController {
         }
     }
 
+    /**
+     * 유저 아이디 중복 체크
+     *
+     * @param userId
+     * @return
+     */
+    @GetMapping("/check/id/{userId}")
+    public boolean checkUserId(@PathVariable("userId") String userId) {
+        boolean result = false;
+        if (userJpaRepo.findByUserId(userId).isPresent()) {
+            result = true;
+        }
+        return result;
+    }
+
+    @GetMapping("/check/mail/{mail}")
+    public boolean checkMail(@PathVariable("mail") String mail) {
+        boolean result = false;
+        if(userJpaRepo.findByMail(mail).isPresent()){
+            result = true;
+        }
+        return result;
+    }
+
+
+    /**
+     * RefreshToken 을 이용한 로그인
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("reconnect")
+    public LoginResponseDto reconnect(HttpServletRequest request) {
+        String ipAddress = request.getRemoteAddr();
+        String refreshToken = request.getHeader("Authorization").replace("Basic ", "");
+        System.out.println(refreshToken);
+        if (!jwtTokenProvider.validationToken(refreshToken)) {
+            throw new RuntimeException("Token is not valid");
+        }
+        UUID userCode = jwtTokenProvider.parseUserCode(refreshToken);
+        User user = userJpaRepo.findById(userCode).orElseThrow();
+        if (user.getIsDeleted() == "Y") {
+            throw new RuntimeException("deleted user");
+        }
+        RefreshToken findRefreshToken = refreshTokenJpaRepo.findByUserId(user.getUserId()).orElseThrow();
+        TokenDto newToken = jwtTokenProvider.createTokenDto(user.getUserCode());
+
+        refreshTokenJpaRepo.save(findRefreshToken.updateToken(newToken.getRefreshToken(), findRefreshToken.getTokenCode(), ipAddress, newToken.getRefreshTokenExpireTime()));
+
+        return LoginResponseDto.builder()
+                .accessToken(newToken.getAccessToken())
+                .accessTokenExpireTime(newToken.getAccessTokenExpireTime())
+                .refreshTokenExpireTime(newToken.getRefreshTokenExpireTime())
+                .grantType(newToken.getGrantType())
+                .refreshToken(newToken.getRefreshToken())
+                .user(user)
+                .build();
+    }
+
+    @PostMapping("password/change")
+    public boolean changePassword(@RequestBody LoginRequestDto loginRequestDto) {
+        User user = userJpaRepo.findByUserId(loginRequestDto.getUserId()).orElseThrow();
+        userJpaRepo.save(User.builder()
+                .userCode(user.getUserCode())
+                .userId(user.getUserId())
+                .name(user.getName())
+                .password(passwordEncoder.encode(loginRequestDto.getPassword()))
+                .roles(user.getRoles())
+                .mail(user.getMail())
+                .isDeleted(user.getIsDeleted())
+                .build());
+
+        return true;
+    }
+
     private String newPassword() {
         Random random = new Random();
         StringBuffer stringBuffer = new StringBuffer();
-        for(int i = 0; i < 8; i++) {
-            if(random.nextBoolean()) {
-                stringBuffer.append((char)((int)(random.nextInt(26)) + 97));
+        for (int i = 0; i < 8; i++) {
+            if (random.nextBoolean()) {
+                stringBuffer.append((char) ((int) (random.nextInt(26)) + 97));
             } else {
                 stringBuffer.append(random.nextInt(10));
             }
@@ -130,9 +220,11 @@ public class UserController {
         return stringBuffer.toString();
     }
 
-    private String setContext(String password) {
+    private String setContext(String password, String userId) {
         Context context = new Context();
+        String maskedId = userId.substring(0, userId.length() - 2) + "**";
         context.setVariable("password", password);
+        context.setVariable("userId", maskedId);
         return templateEngine.process("mail", context);
     }
 

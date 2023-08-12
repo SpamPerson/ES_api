@@ -13,9 +13,9 @@ This Project is The ES Project of Rest API.
 
 # Working
 + 2023.07.24
-  + Create Project
-  + Connecting DataBase And Create Entity
-  + Setting Config (Security and JWT)
+  + Created Project
+  + Connected DataBase And Create Entity
+  + Set up Config (Security and JWT)
 + 2023.08.04
   + Created RefreshToken Entity
   + Modified User Entity
@@ -26,3 +26,9 @@ This Project is The ES Project of Rest API.
   + Created UserController (login && signUp)
 + 2023.08.11
   + Created Find Password And InitSetting
++ 2023.08.12
+  + Created User ID Check 
+  + Created User Mail Check
+  + Created User Login by RefreshToken(jwt)
+  + Created User Change Password (Role:USER)
+  + Added Masking User ID at Mail Send Template
