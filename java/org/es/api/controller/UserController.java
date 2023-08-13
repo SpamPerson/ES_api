@@ -14,6 +14,7 @@ import org.es.api.entity.UserRole;
 import org.es.api.repository.RefreshTokenJpaRepo;
 import org.es.api.repository.UserJpaRepo;
 import org.es.api.repository.UserRoleJpaRepo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -149,7 +150,7 @@ public class UserController {
     @GetMapping("/check/mail/{mail}")
     public boolean checkMail(@PathVariable("mail") String mail) {
         boolean result = false;
-        if(userJpaRepo.findByMail(mail).isPresent()){
+        if (userJpaRepo.findByMail(mail).isPresent()) {
             result = true;
         }
         return result;

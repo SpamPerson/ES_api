@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="kr">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>ES-Password</title>
 </head>
 <body>
-<div style="font-size: 15px">
-    <span th:text="${password}"></span><br>
-    <span th:text="${userId}"></span>
+<div style="font-size: 15px; text-align: center; width: 100%;">
+    <h1>ES</h1>
+    <hr>
+    <div style="padding: 20px; display: flex; flex-direction: column; text-align: start; gap: 10px;">
+        <div>
+            아이디는 <span style="font-weight: bold;" th:text="${userId}"></span> 이며,<br>
+            변경된 비밀번호는 <span style="font-weight: bold;" th:text="${password}"></span> 입니다.
+        </div>
+        <div>
+            <a style="font-size:18px; font-weight: bold" href="http://localhost:3000/login">로그인 하러 가기</a>
+        </div>
+    </div>
+    <hr>
 </div>
 </body>
+
 </html>

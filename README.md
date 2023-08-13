@@ -32,3 +32,5 @@ This Project is The ES Project of Rest API.
   + Created User Login by RefreshToken(jwt)
   + Created User Change Password (Role:USER)
   + Added Masking User ID at Mail Send Template
++ 2023.08.13
+  + Modified Find Password Mail Template
