@@ -1,6 +1,7 @@
 # Project Info
 This Project is The ES Project of Rest API.
-<br>https://github.com/SpamPerson/ES_Documents.git
+* Document: https://github.com/SpamPerson/ES_Documents
+* Web: https://github.com/SpamPerson/ES_web 
 
 1. Spring Boot v2.5.4
 2. JWT
