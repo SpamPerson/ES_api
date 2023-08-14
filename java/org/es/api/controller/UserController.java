@@ -1,6 +1,5 @@
 package org.es.api.controller;
 
-
 import lombok.RequiredArgsConstructor;
 import org.es.api.config.JwtTokenProvider;
 import org.es.api.dto.SignUpUserDto;
@@ -14,7 +13,6 @@ import org.es.api.entity.UserRole;
 import org.es.api.repository.RefreshTokenJpaRepo;
 import org.es.api.repository.UserJpaRepo;
 import org.es.api.repository.UserRoleJpaRepo;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -167,7 +165,7 @@ public class UserController {
     public LoginResponseDto reconnect(HttpServletRequest request) {
         String ipAddress = request.getRemoteAddr();
         String refreshToken = request.getHeader("Authorization").replace("Basic ", "");
-        System.out.println(refreshToken);
+
         if (!jwtTokenProvider.validationToken(refreshToken)) {
             throw new RuntimeException("Token is not valid");
         }

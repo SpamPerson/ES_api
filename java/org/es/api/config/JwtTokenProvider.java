@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.es.api.dto.TokenDto;
 import org.es.api.repository.UserJpaRepo;
+import org.es.api.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,12 +24,12 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secretKey;
     /**
-     *  1000L 1초
+     * 1000L 1초
      */
-    private final Long accessTokenValidTime = 1 * 60 * 1000L;
+    private final Long accessTokenValidTime = 30 * 60 * 1000L;
     private final Long refreshTokenValidTime = 15 * 24 * 60 * 60 * 1000L;
     private final UserJpaRepo userJpaRepo;
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
     @PostConstruct
     protected void init() {
@@ -36,7 +37,7 @@ public class JwtTokenProvider {
     }
 
     //token 생성
-    public TokenDto createTokenDto(UUID userCode){
+    public TokenDto createTokenDto(UUID userCode) {
         Claims claims = Jwts.claims().setSubject(String.valueOf(userCode));
         Date now = new Date();
 
@@ -65,16 +66,16 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    public Authentication getAuthentication(String token){
+    public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
         UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
-        return new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     private Claims parseClaims(String token) {
         try {
             return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        } catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
     }
@@ -83,17 +84,24 @@ public class JwtTokenProvider {
         try {
             String userCode = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
             return UUID.fromString(userCode);
-        }catch(ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             throw e;
         }
     }
 
     public String resolveToken(HttpServletRequest request) {
-        String token;
-        if(request.getHeader("Authorization") != null && request.getHeader("Authorization").startsWith("Bearer ")){
-            token = request.getHeader("Authorization").replace("Bearer ","");
-        } else {
-            token = null;
+        String token = null;
+        if (request.getHeader("Authorization") != null) {
+            if (request.getHeader("Authorization").startsWith("Bearer")) {
+                token = request.getHeader("Authorization").replace("Bearer ", "");
+            } else if (request.getHeader("Authorization").startsWith("Basic")) {
+                token = request.getHeader("Authorization").replace("Basic ", "");
+            }
+            if (token == null) {
+                throw new RuntimeException("Token not found");
+            } else if (!validationToken(token)) {
+                token = null;
+            }
         }
         return token;
     }
@@ -102,8 +110,8 @@ public class JwtTokenProvider {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
-        } catch (JwtException | IllegalArgumentException e){
-            System.out.println(e.toString());
+        } catch (JwtException | IllegalArgumentException e) {
+            e.printStackTrace();
             return false;
         }
     }

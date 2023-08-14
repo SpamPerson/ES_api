@@ -34,3 +34,6 @@ This Project is The ES Project of Rest API.
   + Added Masking User ID at Mail Send Template
 + 2023.08.13
   + Modified Find Password Mail Template
++ 2023.08.14
+  + Debug JWT
+  + Created WordController
