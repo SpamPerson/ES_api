@@ -38,3 +38,6 @@ This Project is The ES Project of Rest API.
 + 2023.08.14
   + Debug JWT
   + Created WordController
++ 2023.08.15
+  + Created Word List Procedure.
+  + Created Word Procedure Service.
