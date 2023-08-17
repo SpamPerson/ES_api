@@ -3,7 +3,6 @@ package org.es.api.controller;
 import lombok.RequiredArgsConstructor;
 import org.es.api.dto.request.SettingRequestDto;
 import org.es.api.entity.UserRole;
-import org.es.api.repository.UserJpaRepo;
 import org.es.api.repository.UserRoleJpaRepo;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
