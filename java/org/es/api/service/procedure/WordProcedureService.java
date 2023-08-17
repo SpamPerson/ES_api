@@ -21,7 +21,7 @@ public class WordProcedureService {
     public List<Word> prcWordList(String userId, String searchText, String searchColumn, String oderBy) {
         System.out.println(userId);
         System.out.println(searchText);
-        System.out.println(searchText);
+        System.out.println(searchColumn);
         System.out.println(oderBy);
 
         List<Object[]> prcResult = wordJpaRepo.prcListWord(userId, searchText, searchColumn, oderBy);

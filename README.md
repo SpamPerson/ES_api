@@ -41,3 +41,6 @@ This Project is The ES Project of Rest API.
 + 2023.08.15
   + Created Word List Procedure.
   + Created Word Procedure Service.
++ 2023.08.17
+  + Word Page Function made.
+  + Word Search Function made.

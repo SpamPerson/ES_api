@@ -26,24 +26,35 @@ public class WordController {
 
     /**
      * 영단어 리스트 불러오기.
-     * @@ [Paging 작업 요망]
+     *
      * @param request
      * @return
+     * @@ [Paging 작업 요망]
      */
-    @GetMapping("/list/{searchText}/{searchColumn}/{orderBy}")
-    public List<Word> wordList(HttpServletRequest request) {
-        String accessToken = request.getHeader("Authorization").replace("Bearer ","");
+    @GetMapping("/list/{searchColumn}/{searchText}/{orderBy}")
+    public List<Word> wordList(
+            HttpServletRequest request,
+            @PathVariable("searchColumn") String searchColumn,
+            @PathVariable("searchText") String searchText,
+            @PathVariable("orderBy") String orderBy
+    ) {
+
+        if (searchText.equals("@empty")) {
+            searchText = null;
+        }
+        String accessToken = request.getHeader("Authorization").replace("Bearer ", "");
         UUID userCode = jwtTokenProvider.parseUserCode(accessToken);
         User user = userJpaRepo.findById(userCode).orElseThrow();
 
-        return wordProcedureService.prcWordList(user.getUserId(),"","","");
+        return wordProcedureService.prcWordList(user.getUserId(), searchText, searchColumn, orderBy);
     }
 
     /**
      * 단어 저장 기능
-     * @@ [단어 중복 여부 확인 기능 작업 요망]
+     *
      * @param wordRequestDto
      * @return
+     * @@ [단어 중복 여부 확인 기능 작업 요망]
      */
     @PostMapping("")
     public boolean saveWord(@RequestBody WordDto wordRequestDto) {
