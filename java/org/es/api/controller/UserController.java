@@ -205,6 +205,20 @@ public class UserController {
         return true;
     }
 
+    @GetMapping("info")
+    public User getUserInfoByAccessToken(HttpServletRequest request){
+        String accessToken = request.getHeader("Authorization").replace("Bearer ", "");
+        if (!jwtTokenProvider.validationToken(accessToken)) {
+            throw new RuntimeException("Token is not valid");
+        }
+        UUID userCode = jwtTokenProvider.parseUserCode(accessToken);
+        User user = userJpaRepo.findById(userCode).orElseThrow();
+        if(user.getIsDeleted() == "Y") {
+            throw new RuntimeException("User deleted");
+        }
+        return user;
+    }
+
     private String newPassword() {
         Random random = new Random();
         StringBuffer stringBuffer = new StringBuffer();

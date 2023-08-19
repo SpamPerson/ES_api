@@ -3,6 +3,7 @@ package org.es.api.controller;
 import lombok.RequiredArgsConstructor;
 import org.es.api.config.JwtTokenProvider;
 import org.es.api.dto.WordDto;
+import org.es.api.dto.request.UpdateWordRequestDto;
 import org.es.api.entity.User;
 import org.es.api.entity.Word;
 import org.es.api.repository.UserJpaRepo;
@@ -23,6 +24,19 @@ public class WordController {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final WordProcedureService wordProcedureService;
+
+    /**
+     * 영단어 수정
+     *
+     * @param updateWordRequestDto
+     * @param request
+     * @return
+     */
+    @PatchMapping("")
+    public Word updateWord(@RequestBody UpdateWordRequestDto updateWordRequestDto, HttpServletRequest request) {
+        List<Word> wordList = wordProcedureService.prcUpdateWord(updateWordRequestDto.getWordCode(), updateWordRequestDto.getColumnName(), updateWordRequestDto.getValue());
+        return wordList.get(0);
+    }
 
     /**
      * 영단어 리스트 불러오기.
@@ -61,6 +75,5 @@ public class WordController {
         wordJpaRepo.save(wordRequestDto.toWord());
         return true;
     }
-
 
 }

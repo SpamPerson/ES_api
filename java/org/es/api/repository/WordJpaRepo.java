@@ -19,4 +19,7 @@ public interface WordJpaRepo extends JpaRepository<Word, Long> {
             @Param("SEARCH_COLUMN") String searchColumn,
             @Param("ORDER_BY") String orderBy
     );
+
+    @Query(value = "CALL es_db.PRC_UPDATE_WORD(:WORD_CODE, :COLUMN_NAME, :VALUE);", nativeQuery = true)
+    List<Object[]> prcUpdateWord(@Param("WORD_CODE") String wordCode, @Param("COLUMN_NAME") String columnName, @Param("VALUE") String value);
 }
