@@ -33,4 +33,7 @@ public class Sentence {
 
     @Column(columnDefinition = "char(1) default 'N'",name = "SENTENCE_IS_MEMORIZE")
     private String isMemorize;
+
+    @Column(name = "SENTENCE_REMARKS")
+    private String remarks;
 }

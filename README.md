@@ -50,3 +50,4 @@ This Project is The ES Project of Rest API.
   + Made Add Word Feature.
   + Made English Word Overlap Feature.
   + Made Delete Word Feature.
+  + Made Select Sentence List by Procedure.
