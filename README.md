@@ -46,3 +46,7 @@ This Project is The ES Project of Rest API.
   + Word Search Function made.
 + 2023.08.19
   + Made Update Word Feature by Procedure.
++ 2023.08.20
+  + Made Add Word Feature.
+  + Made English Word Overlap Feature.
+  + Made Delete Word Feature.

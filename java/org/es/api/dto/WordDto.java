@@ -11,6 +11,7 @@ import org.es.api.entity.Word;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WordDto {
+    Long wordCode;
     String userId;
     String enWord;
     String krWord;

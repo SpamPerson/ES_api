@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.es.api.config.JwtTokenProvider;
 import org.es.api.dto.WordDto;
 import org.es.api.dto.request.UpdateWordRequestDto;
+import org.es.api.dto.response.WordCountResponseDto;
 import org.es.api.entity.User;
 import org.es.api.entity.Word;
 import org.es.api.repository.UserJpaRepo;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,8 +36,27 @@ public class WordController {
      */
     @PatchMapping("")
     public Word updateWord(@RequestBody UpdateWordRequestDto updateWordRequestDto, HttpServletRequest request) {
+        if (updateWordRequestDto.getColumnName().equals("enWord") && overlapEnWord(request, updateWordRequestDto.getValue())) {
+            throw new RuntimeException("This word is existing");
+        }
         List<Word> wordList = wordProcedureService.prcUpdateWord(updateWordRequestDto.getWordCode(), updateWordRequestDto.getColumnName(), updateWordRequestDto.getValue());
         return wordList.get(0);
+    }
+
+    /**
+     * 단어 저장 기능
+     *
+     * @param wordRequestDto
+     * @return
+     * @@ [단어 중복 여부 확인 기능 작업 요망]
+     */
+    @PostMapping("")
+    public Word saveWord(@RequestBody WordDto wordRequestDto, HttpServletRequest request) {
+        if (overlapEnWord(request, wordRequestDto.getEnWord())) {
+            throw new RuntimeException("This word is existing");
+        }
+
+        return wordJpaRepo.save(wordRequestDto.toWord());
     }
 
     /**
@@ -64,16 +85,51 @@ public class WordController {
     }
 
     /**
-     * 단어 저장 기능
+     * 영단어 대량 삭제
      *
-     * @param wordRequestDto
+     * @param wordListDto
      * @return
-     * @@ [단어 중복 여부 확인 기능 작업 요망]
      */
-    @PostMapping("")
-    public boolean saveWord(@RequestBody WordDto wordRequestDto) {
-        wordJpaRepo.save(wordRequestDto.toWord());
+    @PutMapping("/list")
+    public boolean deleteWordList(@RequestBody List<WordDto> wordListDto) {
+        List<Long> wordCodeList = wordListDto.stream()
+                .map(WordDto::getWordCode)
+                .collect(Collectors.toList());
+
+        List<Word> wordList = wordJpaRepo.findAllById(wordCodeList);
+
+        for (Word word : wordList) {
+            wordJpaRepo.delete(word);
+        }
         return true;
+    }
+
+    @GetMapping("/count")
+    public WordCountResponseDto wordCount(HttpServletRequest request) {
+        String accessToken = request.getHeader("Authorization").replace("Bearer ", "");
+        UUID userCode = jwtTokenProvider.parseUserCode(accessToken);
+        User user = userJpaRepo.findById(userCode).orElseThrow();
+        List<Word> wordList = wordJpaRepo.findAllByUserId(user.getUserId());
+        int totalCount = wordList.size();
+        int memorizeCount = (int) wordList.stream()
+                .filter(word -> "Y".equals(word.getIsMemorize()))
+                .count();
+        return WordCountResponseDto.builder()
+                .totalWord(totalCount)
+                .memorizeWord(memorizeCount)
+                .build();
+    }
+
+    public boolean overlapEnWord(HttpServletRequest request, String word) {
+        boolean reault = false;
+        String accessToken = request.getHeader("Authorization").replace("Bearer ", "");
+        UUID userCode = jwtTokenProvider.parseUserCode(accessToken);
+        User user = userJpaRepo.findById(userCode).orElseThrow();
+
+        if (wordProcedureService.prcSelectWordByEnWord(user.getUserId(), word).size() > 0) {
+            reault = true;
+        }
+        return reault;
     }
 
 }
