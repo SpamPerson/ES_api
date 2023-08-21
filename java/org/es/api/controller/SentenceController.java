@@ -48,7 +48,7 @@ public class SentenceController {
     }
 
     @GetMapping("/count")
-    public SentenceCountResponseDto wordCount(HttpServletRequest request) {
+    public SentenceCountResponseDto sentenceCount(HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization").replace("Bearer ", "");
         UUID userCode = jwtTokenProvider.parseUserCode(accessToken);
         User user = userJpaRepo.findById(userCode).orElseThrow();
