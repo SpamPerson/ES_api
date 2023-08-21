@@ -2,8 +2,11 @@ package org.es.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.es.api.config.JwtTokenProvider;
+import org.es.api.dto.response.SentenceCountResponseDto;
+import org.es.api.dto.response.WordCountResponseDto;
 import org.es.api.entity.Sentence;
 import org.es.api.entity.User;
+import org.es.api.entity.Word;
 import org.es.api.repository.SentenceJpaRepo;
 import org.es.api.repository.UserJpaRepo;
 import org.es.api.service.procedure.SentenceProcedureService;
@@ -42,5 +45,21 @@ public class SentenceController {
         User user = userJpaRepo.findById(userCode).orElseThrow();
 
         return sentenceProcedureService.prcSentenceList(user.getUserId(), searchText, searchColumn, orderBy);
+    }
+
+    @GetMapping("/count")
+    public SentenceCountResponseDto wordCount(HttpServletRequest request) {
+        String accessToken = request.getHeader("Authorization").replace("Bearer ", "");
+        UUID userCode = jwtTokenProvider.parseUserCode(accessToken);
+        User user = userJpaRepo.findById(userCode).orElseThrow();
+        List<Sentence> sentenceList = sentenceJpaRepo.findAllByUserId(user.getUserId());
+        int totalCount = sentenceList.size();
+        int memorizeCount = (int) sentenceList.stream()
+                .filter(word -> "Y".equals(word.getIsMemorize()))
+                .count();
+        return SentenceCountResponseDto.builder()
+                .totalSentence(totalCount)
+                .memorizeSentence(memorizeCount)
+                .build();
     }
 }

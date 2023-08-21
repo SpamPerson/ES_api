@@ -51,3 +51,6 @@ This Project is The ES Project of Rest API.
   + Made English Word Overlap Feature.
   + Made Delete Word Feature.
   + Made Select Sentence List by Procedure.
+  + Made Word Count Feature.
++ 2023.08.21
+  + Made Sentence Count Feature.
