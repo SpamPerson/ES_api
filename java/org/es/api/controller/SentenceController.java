@@ -2,23 +2,19 @@ package org.es.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.es.api.config.JwtTokenProvider;
+import org.es.api.dto.SentenceDto;
 import org.es.api.dto.response.SentenceCountResponseDto;
-import org.es.api.dto.response.WordCountResponseDto;
 import org.es.api.entity.Sentence;
 import org.es.api.entity.User;
-import org.es.api.entity.Word;
 import org.es.api.repository.SentenceJpaRepo;
 import org.es.api.repository.UserJpaRepo;
 import org.es.api.service.procedure.SentenceProcedureService;
-import org.springframework.security.core.parameters.P;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +25,20 @@ public class SentenceController {
     private final SentenceProcedureService sentenceProcedureService;
     private final UserJpaRepo userJpaRepo;
     private final JwtTokenProvider jwtTokenProvider;
+
+    @PostMapping("")
+    public Sentence sentenceSave(@RequestBody SentenceDto sentenceDto) {
+        return sentenceJpaRepo.save(sentenceDto.toSentence());
+    }
+
+    @PutMapping("/list")
+    public boolean sentenceDeleteList(@RequestBody List<SentenceDto> sentenceDtoList) {
+        List<Long> sentenceCodeList = sentenceDtoList.stream()
+                .map(SentenceDto::getSentenceCode)
+                .collect(Collectors.toList());
+        sentenceJpaRepo.deleteAllById(sentenceCodeList);
+        return true;
+    }
 
     @GetMapping("/list/{searchColumn}/{searchText}/{orderBy}")
     public List<Sentence> sentenceList(

@@ -9,8 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UpdateWordRequestDto {
     String wordCode;
-
     String columnName;
-
     String value;
 }

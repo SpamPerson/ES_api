@@ -96,11 +96,8 @@ public class WordController {
                 .map(WordDto::getWordCode)
                 .collect(Collectors.toList());
 
-        List<Word> wordList = wordJpaRepo.findAllById(wordCodeList);
+        wordJpaRepo.deleteAllById(wordCodeList);
 
-        for (Word word : wordList) {
-            wordJpaRepo.delete(word);
-        }
         return true;
     }
 
