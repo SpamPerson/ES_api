@@ -25,3 +25,5 @@ spring:
     hibernate:
       ddl-auto: create
       dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  ai:
+    key: Insert your Open Ai key

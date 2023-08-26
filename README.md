@@ -57,3 +57,6 @@ This Project is The ES Project of Rest API.
 + 2023.08.25
   + Made Sentence Add Feature.
   + Made Sentence List Delete Feature.
++ 2023.08.26
+  + Made Sentence Update Feature.
+  + Made ChatGPT with conversation Feature.

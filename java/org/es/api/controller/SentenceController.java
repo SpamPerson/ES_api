@@ -31,6 +31,16 @@ public class SentenceController {
         return sentenceJpaRepo.save(sentenceDto.toSentence());
     }
 
+    @PutMapping("")
+    public Sentence sentenceUpdate(@RequestBody SentenceDto sentenceDto) {
+        Sentence sentence = sentenceJpaRepo.findById(sentenceDto.getSentenceCode()).orElseThrow();
+        sentence.setEnSentence(sentenceDto.getEnSentence());
+        sentence.setKrSentence(sentenceDto.getKrSentence());
+        sentence.setRemarks(sentenceDto.getRemarks());
+        sentence.setIsMemorize(sentenceDto.getIsMemorize());
+        return sentenceJpaRepo.save(sentence);
+    }
+
     @PutMapping("/list")
     public boolean sentenceDeleteList(@RequestBody List<SentenceDto> sentenceDtoList) {
         List<Long> sentenceCodeList = sentenceDtoList.stream()

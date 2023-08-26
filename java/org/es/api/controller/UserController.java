@@ -39,6 +39,16 @@ public class UserController {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
 
+    @PostMapping("/adminRole/{userId}")
+    public void signupAdminRole (@PathVariable("userId") String userId) {
+        User user = userJpaRepo.findByUserId(userId).orElseThrow();
+        UserRole adminRole = userRoleJpaRepo.findByName("ROLE_ADMIN").orElseThrow();
+        List<UserRole> roles = user.getRoles();
+        roles.add(adminRole);
+        user.setRoles(roles);
+        userJpaRepo.save(user);
+    }
+
     /**
      * 회원가입
      *
