@@ -3,6 +3,7 @@ package org.es.api.controller;
 import lombok.RequiredArgsConstructor;
 import org.es.api.config.JwtTokenProvider;
 import org.es.api.dto.SentenceDto;
+import org.es.api.dto.response.SearchSentenceResponseDto;
 import org.es.api.dto.response.SentenceCountResponseDto;
 import org.es.api.entity.Sentence;
 import org.es.api.entity.User;
@@ -50,21 +51,19 @@ public class SentenceController {
         return true;
     }
 
-    @GetMapping("/list/{searchColumn}/{searchText}/{orderBy}")
-    public List<Sentence> sentenceList(
+    @GetMapping("/list/{searchColumn}/{currentPageNum}")
+    public SearchSentenceResponseDto sentenceList(
             HttpServletRequest request,
             @PathVariable("searchColumn") String searchColumn,
-            @PathVariable("searchText") String searchText,
-            @PathVariable("orderBy") String orderBy
+            @PathVariable("currentPageNum") int currentPageNum,
+            @RequestParam String searchText
     ) {
-        if (searchText.equals("@empty")) {
-            searchText = null;
-        }
+
         String accessToken = request.getHeader("Authorization").replace("Bearer ", "");
         UUID userCode = jwtTokenProvider.parseUserCode(accessToken);
         User user = userJpaRepo.findById(userCode).orElseThrow();
 
-        return sentenceProcedureService.prcSentenceList(user.getUserId(), searchText, searchColumn, orderBy);
+        return sentenceProcedureService.prcSentenceList(user.getUserId(), searchText, searchColumn, currentPageNum);
     }
 
     @GetMapping("/count")

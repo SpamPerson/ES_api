@@ -66,4 +66,5 @@ This Project is The ES Project of Rest API.
   + Made User Delete Feature.
   + Made User list search Feature.
 + 2023.08.28
-  + Fixed Get Word List Feature.
+  + Fixed Word Search List Feature.
+  + Fixed Sentence Search List Feature.

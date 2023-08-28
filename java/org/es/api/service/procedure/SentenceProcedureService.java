@@ -1,6 +1,7 @@
 package org.es.api.service.procedure;
 
 import lombok.RequiredArgsConstructor;
+import org.es.api.dto.response.SearchSentenceResponseDto;
 import org.es.api.entity.Sentence;
 import org.es.api.repository.SentenceJpaRepo;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,13 @@ public class SentenceProcedureService {
         return bigInteger.longValue();
     }
 
-    public List<Sentence> prcSentenceList(String userId, String searchText, String searchColumn, String orderBy) {
-        List<Object[]> prcResult = sentenceJpaRepo.prcListSentence(userId, searchText, searchColumn, orderBy);
+    public SearchSentenceResponseDto prcSentenceList(String userId, String searchText, String searchColumn, int currentPageNum) {
+        int pageSize = 10;
+        int totalCount = 0;
+        int totalPage = 0;
+        List<Object[]> prcResult = sentenceJpaRepo.prcListSentence(userId, searchText, searchColumn, currentPageNum, pageSize);
+        List<Object[]> prcCountResult = sentenceJpaRepo.prcCountSentence(userId, searchText, searchColumn);
+
         List<Sentence> sentenceList = new ArrayList<>();
         for (Object[] result : prcResult) {
             sentenceList.add(Sentence.builder()
@@ -33,7 +39,16 @@ public class SentenceProcedureService {
                     .build()
             );
         }
-        return sentenceList;
+
+        for (Object[] result : prcCountResult) {
+            totalCount = ((BigInteger) result[0]).intValue();
+        }
+        totalPage = Math.max((int) Math.ceil((double) totalCount / pageSize), 1);
+
+        return SearchSentenceResponseDto.builder()
+                .sentences(sentenceList)
+                .totalPage(totalPage)
+                .build();
     }
 
 }
