@@ -69,6 +69,27 @@ public class UserController {
         userJpaRepo.save(signUpUserDto.toUser(passwordEncoder, roles));
     }
 
+    @PostMapping("/test/create")
+    public boolean user20() {
+        UserRole role = userRoleJpaRepo.findByName("ROLE_USER").orElseThrow();
+        List<UserRole> roles = new ArrayList<>();
+        roles.add(role);
+        List<User> users = new ArrayList<>();
+        for(int i = 0; i < 21; ++i) {
+            users.add(
+                    User.builder()
+                            .name("test"+i)
+                            .mail("test@"+i+".com")
+                            .userId("test"+i)
+                            .password(passwordEncoder.encode("test"))
+                            .isDeleted("N")
+                            .build()
+            );
+        }
+        userJpaRepo.saveAll(users);
+        return true;
+    }
+
     /**
      * 로그인
      *
@@ -83,6 +104,11 @@ public class UserController {
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             throw new RuntimeException("Password error");
         }
+
+        if(user.getIsDeleted().equals("Y")) {
+            throw new RuntimeException("User disabled");
+        }
+
         TokenDto tokenDto = jwtTokenProvider.createTokenDto(user.getUserCode());
         RefreshToken refreshToken;
         if (refreshTokenJpaRepo.findByUserId(user.getUserId()).isPresent()) {

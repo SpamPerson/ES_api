@@ -1,6 +1,7 @@
 package org.es.api.service.procedure;
 
 import lombok.RequiredArgsConstructor;
+import org.es.api.dto.response.SearchWordListResponseDto;
 import org.es.api.entity.Word;
 import org.es.api.repository.WordJpaRepo;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,10 @@ public class WordProcedureService {
         return bigInteger.longValue();
     }
 
-    public List<Word> prcWordList(String userId, String searchText, String searchColumn, String oderBy) {
-        List<Object[]> prcResult = wordJpaRepo.prcListWord(userId, searchText, searchColumn, oderBy);
+    public SearchWordListResponseDto prcWordList(String userId, String searchColumn, String searchText, int currentPageNum, int pageSize) {
+        List<Object[]> prcResult = wordJpaRepo.prcListWord(userId, searchText, searchColumn, currentPageNum, pageSize);
+        List<Object[]> prcCountResult = wordJpaRepo.prcCountWordList(userId, searchText, searchColumn);
+        int totalCount = 0;
         List<Word> wordList = new ArrayList<>();
         for (Object[] result : prcResult) {
             wordList.add(Word.builder()
@@ -33,7 +36,16 @@ public class WordProcedureService {
                     .build()
             );
         }
-        return wordList;
+
+        for(Object[] result : prcCountResult) {
+            totalCount = ((BigInteger) result[0]).intValue();
+        }
+        int totalPage = Math.max((int) Math.ceil((double) totalCount / pageSize) , 1);
+
+        return SearchWordListResponseDto.builder()
+                .words(wordList)
+                .totalPage(totalPage)
+                .build();
     }
 
     public List<Word> prcUpdateWord(String wordCode, String columnName, String value) {

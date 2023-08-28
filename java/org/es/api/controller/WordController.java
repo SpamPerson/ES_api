@@ -4,15 +4,19 @@ import lombok.RequiredArgsConstructor;
 import org.es.api.config.JwtTokenProvider;
 import org.es.api.dto.WordDto;
 import org.es.api.dto.request.UpdateWordRequestDto;
+import org.es.api.dto.response.SearchWordListResponseDto;
 import org.es.api.dto.response.WordCountResponseDto;
 import org.es.api.entity.User;
 import org.es.api.entity.Word;
 import org.es.api.repository.UserJpaRepo;
 import org.es.api.repository.WordJpaRepo;
 import org.es.api.service.procedure.WordProcedureService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -66,22 +70,21 @@ public class WordController {
      * @return
      * @@ [Paging 작업 요망]
      */
-    @GetMapping("/list/{searchColumn}/{searchText}/{orderBy}")
-    public List<Word> wordList(
+    @GetMapping("/list/{searchColumn}/{currentPageNum}")
+    public SearchWordListResponseDto wordList(
             HttpServletRequest request,
             @PathVariable("searchColumn") String searchColumn,
-            @PathVariable("searchText") String searchText,
-            @PathVariable("orderBy") String orderBy
+            @PathVariable("currentPageNum") int currentPageNum,
+            @RequestParam String searchText
     ) {
+        int pageSize = 10;
 
-        if (searchText.equals("@empty")) {
-            searchText = null;
-        }
         String accessToken = request.getHeader("Authorization").replace("Bearer ", "");
         UUID userCode = jwtTokenProvider.parseUserCode(accessToken);
         User user = userJpaRepo.findById(userCode).orElseThrow();
 
-        return wordProcedureService.prcWordList(user.getUserId(), searchText, searchColumn, orderBy);
+        return wordProcedureService.prcWordList(user.getUserId(), searchColumn, searchText, currentPageNum, pageSize);
+
     }
 
     /**
