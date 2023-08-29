@@ -2,6 +2,7 @@
 This Project is The ES Project of Rest API.
 * Document: https://github.com/SpamPerson/ES_Documents
 * Web: https://github.com/SpamPerson/ES_web 
+* Release: https://spamperson.co.kr (v1)
 
 1. Spring Boot v2.5.4
 2. JWT
@@ -68,3 +69,5 @@ This Project is The ES Project of Rest API.
 + 2023.08.28
   + Fixed Word Search List Feature.
   + Fixed Sentence Search List Feature.
++ 2023.08.29
+  + Released using a test(https://spamperson.co.kr)
